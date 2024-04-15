@@ -10,11 +10,27 @@ void ESCControl::initialize(Receiver* receiver) {
 }
 
 void ESCControl::waitForThrottleLowPosition() {
-  while (receiver->times[2] > 1000) {
-    Serial.println(receiver->times[2]);
-    digitalWrite(25, !digitalRead(25));
-    delay(1000);
-  }
+  // while (receiver->times[2] > 1000) {
+  //   Serial.println(receiver->times[2]);
+  //   digitalWrite(25, !digitalRead(25));
+  //   delay(1000);
+  // }
+  
+  Serial.print("Initialize ESCs \n");
+  delay(5000);
+  Serial.print("SET HIGH \n");
+  analogWrite(motorPins[0].digital, 255);
+  analogWrite(motorPins[1].digital, 255);
+  analogWrite(motorPins[2].digital, 255);
+  analogWrite(motorPins[3].digital, 255);
+  delay(4000);
+  Serial.print("SET LOW \n");
+  analogWrite(motorPins[0].digital, 125);
+  analogWrite(motorPins[1].digital, 125);
+  analogWrite(motorPins[2].digital, 125);
+  analogWrite(motorPins[3].digital, 125);
+  Serial.print("END \n");
+  delay(1000);
 }
 
 void ESCControl::updateMotorPwmByReceiverOnly(bool showLog) {
@@ -39,20 +55,25 @@ void ESCControl::updateMotorPwmByReceiverOnly(bool showLog) {
   }
 }
 
-float pwmMotor1 = 127;
-float pwmMotor2 = 127;
-float pwmMotor3 = 127;
-float pwmMotor4 = 127;
+float maxPwm = 180;
+float minPwm = 150;
+float pwmMotor1 = minPwm;
+float pwmMotor2 = minPwm;
+float pwmMotor3 = minPwm;
+float pwmMotor4 = minPwm;
 void ESCControl::updateMotorPwm(bool showLog, float roll, float pitch, float yaw) {
   
-  pwmMotor1 = pwmMotor1 + roll + pitch;
-  pwmMotor2 = pwmMotor2 - roll + pitch;
-  pwmMotor3 = pwmMotor3 + roll - pitch;
-  pwmMotor4 = pwmMotor4 - roll - pitch;
-  pwmMotor1 = constrain(pwmMotor1, 127, 255);
-  pwmMotor2 = constrain(pwmMotor2, 127, 255);
-  pwmMotor3 = constrain(pwmMotor3, 127, 255);
-  pwmMotor4 = constrain(pwmMotor4, 127, 255);
+
+  pwmMotor1 = pwmMotor1 + pitch;
+  // pwmMotor2 = pwmMotor2 - roll + pitch;
+  pwmMotor3 = pwmMotor3 - pitch;
+
+
+  // pwmMotor4 = pwmMotor4 - roll - pitch;
+  pwmMotor1 = constrain(pwmMotor1, minPwm, maxPwm);
+  pwmMotor2 = constrain(pwmMotor2, minPwm, maxPwm);
+  pwmMotor3 = constrain(pwmMotor3, minPwm, maxPwm);
+  pwmMotor4 = constrain(pwmMotor4, minPwm, maxPwm);
 
   analogWrite(motorPins[0].digital, pwmMotor1);
   analogWrite(motorPins[1].digital, pwmMotor2);
