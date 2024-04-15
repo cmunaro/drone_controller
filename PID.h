@@ -4,16 +4,6 @@
 #include "Arduino.h"
 #include <Arduino_LSM6DSOX.h>
 
-#define Kp_roll 0.7
-#define Ki_roll 0.05
-#define Kd_roll 0.05
-#define Kp_pitch 0.3
-#define Ki_pitch 0.01
-#define Kd_pitch 0.05
-#define Kp_yaw 0.1
-#define Ki_yaw 0.01
-#define Kd_yaw 0.05
-
 using PIDOutputCallback = std::function<void(float, float, float)>;
 
 class PID {

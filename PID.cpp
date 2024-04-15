@@ -17,7 +17,16 @@ void PID::initialize() {
   Serial.println();
 }
 
+float pid_i_mem_pitch = 0;
+float maxCorrection = 50;
+float lastTime = -1;
+float integral = 0;
+float prev_error = 0;
 void PID::update(bool showLog, PIDOutputCallback outputCallback) {
+  if (lastTime = -1) {
+    lastTime = millis();
+  }
+
   IMU.readGyroscope(Gx, Gy, Gz);
   IMU.readAcceleration(Ax, Ay, Az);
   
@@ -25,41 +34,49 @@ void PID::update(bool showLog, PIDOutputCallback outputCallback) {
   float pitch = calculate_pitch(Ax, Ay, Az);
   float yaw = calculate_yaw(Gx, Gy, Gz);
 
-  if (showLog) {
-    Serial.print(roll);
-    Serial.print("\t\t");
-    Serial.print(pitch);
-    Serial.print("\t\t");
-    Serial.print(yaw);
-    Serial.println();
-  }
+  Serial.print(roll);
+  Serial.print("\t\t");
+  Serial.print(pitch);
+  Serial.print("\t\t");
+  Serial.print(yaw);
+  Serial.println();
 
-  // Calculate error
-  float error_roll = desired_roll - roll;
-  float error_pitch = desired_pitch - pitch;
-  float error_yaw = desired_yaw - yaw;
-  
-  // Compute PID output for roll
-  integral_roll += error_roll;
-  // float derivative_roll = error_roll - previous_error_roll;
-  float pid_output_roll = Kp_roll * error_roll + Ki_roll * integral_roll; //+ Kd_roll * derivative_roll;
-  
-  // Compute PID output for pitch
-  integral_pitch += error_pitch;
-  //float derivative_pitch = error_pitch - previous_error_pitch;
-  float pid_output_pitch = Kp_pitch * error_pitch + Ki_pitch * integral_pitch; //+ Kd_pitch * derivative_pitch;
-  
-  // Compute PID output for yaw
-  integral_yaw += error_yaw;
-  // float derivative_yaw = error_yaw - previous_error_yaw;
-  float pid_output_yaw = Kp_yaw * error_yaw + Ki_yaw * integral_yaw; //+ Kd_yaw * derivative_yaw;
+  float error = 0 - pitch;
 
-  // Update previous errors for next iteration
-  previous_error_roll = error_roll;
-  previous_error_pitch = error_pitch;
-  previous_error_yaw = error_yaw;
+  // Proportional term
+  float P = 1 * error;
 
-  outputCallback(pid_output_roll, pid_output_pitch, pid_output_yaw);
+  // Delta time
+  float currentTime = millis();
+  float dt = currentTime - lastTime;
+  lastTime = currentTime;
+
+  // Integral term
+  integral += error * dt;
+  float I = 0.1 * integral;
+  
+  // Derivative term
+  float derivative = (error - prev_error) / dt;
+  float D = 0.05 * derivative;
+  
+  // PID output
+  float output = P + I + D;
+  
+  // Update previous error
+  prev_error = error;
+  
+  // float pid_error_temp = 0 - roll;
+  // pid_i_mem_pitch += 0.5 * pid_error_temp;
+  // if (pid_i_mem_pitch > maxCorrection) pid_i_mem_pitch = maxCorrection;
+  // else if (pid_i_mem_pitch < -maxCorrection) pid_i_mem_pitch = -maxCorrection;
+
+  // float pid_output_pitch = 0.01 * pid_error_temp + pid_i_mem_pitch; //+ pid_d_gain_pitch * (pid_error_temp - pid_last_d_error);
+  // if (pid_output_pitch > maxCorrection) pid_output_pitch = maxCorrection;
+  // else if (pid_output_pitch < -maxCorrection) pid_output_pitch = -maxCorrection;
+
+  //pid_last_d_error = pid_error_temp;
+
+  outputCallback(0, output, 0);
 }
 
 float PID::calculate_roll(float Ax, float Ay, float Az) {

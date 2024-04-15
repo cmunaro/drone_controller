@@ -35,13 +35,12 @@ void setup() {
 }
 
 long beforeUpdate;
-
 void loop() {
   pid.update(false, updateMotorsForPIDOutput);
 
   // escControl.updateMotorPwmByReceiverOnly(false);
 
-  delay(10);
+  delay(50);
 }
 
 void updateMotorsForPIDOutput(float roll, float pitch, float yaw) {
