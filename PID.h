@@ -3,6 +3,8 @@
 
 #include "Arduino.h"
 #include <Arduino_LSM6DSOX.h>
+#include <functional>
+#include "BLEController.h"
 
 using PIDOutputCallback = std::function<void(float, float, float)>;
 
@@ -22,9 +24,10 @@ public:
   float prev_time = 0;
   float yaw_angle = 0;
   
-  void initialize();
+  void initialize(BLEController* bleController);
   void update(bool showLog, PIDOutputCallback outputCallback);
 private:
+  BLEController* bleController;
   float calculate_roll(float Ax, float Ay, float Az);
   float calculate_pitch(float Ax, float Ay, float Az);
   float calculate_yaw(float Gx, float Gy, float Gz);

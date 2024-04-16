@@ -1,6 +1,7 @@
 #include "PID.h"
 
-void PID::initialize() {
+void PID::initialize(BLEController* bleController) {
+  this->bleController = bleController;
   if (!IMU.begin()) {
     Serial.println("Failed to initialize IMU!");
     while (1);
@@ -33,13 +34,21 @@ void PID::update(bool showLog, PIDOutputCallback outputCallback) {
   float roll = calculate_roll(Ax, Ay, Az);
   float pitch = calculate_pitch(Ax, Ay, Az);
   float yaw = calculate_yaw(Gx, Gy, Gz);
+  
+  this->bleController->publishPitchValue(pitch);
+  this->bleController->publishRollValue(roll);
+  this->bleController->publishYawValue(yaw);
 
-  Serial.print(roll);
-  Serial.print("\t\t");
-  Serial.print(pitch);
-  Serial.print("\t\t");
-  Serial.print(yaw);
-  Serial.println();
+  float pWeight, iWeight, dWeight = 0;
+  if (this->bleController->pidDebugEnabled) {
+    pWeight = this->bleController->pWeight;
+    iWeight = this->bleController->iWeight;
+    dWeight = this->bleController->dWeight;
+  } else {
+    pWeight = 2;
+    iWeight = 0.5;
+    dWeight = 0.1;
+  }
 
   float error = 0 - pitch;
 
@@ -94,5 +103,5 @@ float PID::calculate_yaw(float Gx, float Gy, float Gz) {
     yaw_angle += Gz * dt;
 
     prev_time = curr_time;
-    return yaw_angle;
+    return yaw_angle - 90;
 }
