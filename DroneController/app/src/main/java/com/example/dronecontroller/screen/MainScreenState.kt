@@ -4,7 +4,8 @@ import no.nordicsemi.android.kotlin.ble.core.ServerDevice
 
 data class MainScreenState(
     val connection: ConnectionState = ConnectionState.Disconnected.Idle,
-    val droneState: DroneState = DroneState.Uninitialized
+    val dronePositionState: DronePositionState? = null,
+    val debugPIDState: DebugPIDState? = null,
 )
 
 sealed interface ConnectionState {
@@ -20,11 +21,15 @@ sealed interface ConnectionState {
     }
 }
 
-sealed interface DroneState {
-    data object Uninitialized: DroneState
-    data class Online(
-        val pitch: Float?,
-        val roll: Float?,
-        val yaw: Float?,
-    ): DroneState
-}
+data class DronePositionState(
+    val pitch: Float?,
+    val roll: Float?,
+    val yaw: Float?,
+)
+
+data class DebugPIDState(
+    val pidDebugEnabled: Boolean,
+    val pWeight: Float?,
+    val iWeight: Float?,
+    val dWeight: Float?,
+)

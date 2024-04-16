@@ -19,7 +19,16 @@ fun MainPage() {
     val context = LocalContext.current.applicationContext
 
     when (val connectionState = state.connection) {
-        is ConnectionState.Connected -> ControlsScreen(connectionState, state.droneState)
+        is ConnectionState.Connected -> ControlsScreen(
+            connectionState = connectionState,
+            dronePositionState = state.dronePositionState,
+            debugPIDState = state.debugPIDState,
+            onTogglePIDDebug = viewModel::onTogglePIDDebug,
+            onAlterP = viewModel::onAlterP,
+            onAlterI = viewModel::onAlterI,
+            onAlterD = viewModel::onAlterD,
+        )
+
         is ConnectionState.Disconnected -> ConnectionScreen(
             disconnectedState = connectionState,
             onSearch = { viewModel.onSearch(context = context) },
