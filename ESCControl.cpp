@@ -5,8 +5,9 @@
 ESCControl::ESCControl(const Pin (&pins)[4]): motorPins(pins) {
 }
 
-void ESCControl::initialize(Receiver* receiver) {
+void ESCControl::initialize(Receiver* receiver, BLEController* bleController) {
   this->receiver = receiver;
+  this->bleController = bleController;
 }
 
 void ESCControl::waitForThrottleLowPosition() {
