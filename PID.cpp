@@ -36,13 +36,19 @@ void PID::update(bool showLog, PIDOutputCallback outputCallback) {
   float yaw = calculate_yaw(Gx, Gy, Gz);
   
   this->bleController->publishPitchValue(pitch);
+  this->bleController->publishRollValue(roll);
+  this->bleController->publishYawValue(yaw);
 
-  Serial.print(roll);
-  Serial.print("\t\t");
-  Serial.print(pitch);
-  Serial.print("\t\t");
-  Serial.print(yaw);
-  Serial.println();
+  float pWeight, iWeight, dWeight = 0;
+  if (this->bleController->pidDebugEnabled) {
+    pWeight = this->bleController->pWeight;
+    iWeight = this->bleController->iWeight;
+    dWeight = this->bleController->dWeight;
+  } else {
+    pWeight = 2;
+    iWeight = 0.5;
+    dWeight = 0.1;
+  }
 
   float error = 0 - pitch;
 

@@ -4,10 +4,14 @@
 BLEService StateService("00700700-0001-0001-0001-111111111111");
 BLEFloatCharacteristic PitchCharacteristic(
   "00001111-0000-0000-0001-000000000001", BLERead | BLENotify);
+BLEFloatCharacteristic RollCharacteristic(
+  "00001111-0000-0000-0001-000000000002", BLERead | BLENotify);
+BLEFloatCharacteristic YawCharacteristic(
+  "00001111-0000-0000-0001-000000000003", BLERead | BLENotify);
 
 BLEService PIDDebugService("00700700-0001-0001-0001-222222222222");
-BLEFloatCharacteristic PWeightCharacteristic(
-  "00001111-0000-0000-0002-000000000001", BLEWrite);
+BLEBoolCharacteristic PIDDebugEnabledCharacteristic(
+  "00001111-0000-0000-0002-000000000000", BLEWrite);
 BLEFloatCharacteristic PWeightCharacteristic(
   "00001111-0000-0000-0002-000000000001", BLEWrite);
 BLEFloatCharacteristic IWeightCharacteristic(
@@ -27,9 +31,12 @@ void BLEController::initialize() {
 
   BLE.setAdvertisedService(StateService);
   StateService.addCharacteristic(PitchCharacteristic);
+  StateService.addCharacteristic(RollCharacteristic);
+  StateService.addCharacteristic(YawCharacteristic);
   BLE.addService(StateService);
 
   BLE.setAdvertisedService(PIDDebugService);
+  PIDDebugService.addCharacteristic(PIDDebugEnabledCharacteristic);
   PIDDebugService.addCharacteristic(PWeightCharacteristic);
   PIDDebugService.addCharacteristic(IWeightCharacteristic);
   PIDDebugService.addCharacteristic(DWeightCharacteristic);
@@ -42,6 +49,9 @@ void BLEController::initialize() {
 void BLEController::updateBLEState() {
   central = BLE.central();
 
+  if (PIDDebugEnabledCharacteristic.written()) {
+    pidDebugEnabled = PIDDebugEnabledCharacteristic.value();
+  }
   if (PWeightCharacteristic.written()) {
     pWeight = PWeightCharacteristic.value();
   }
@@ -55,4 +65,12 @@ void BLEController::updateBLEState() {
 
 void BLEController::publishPitchValue(float value) {
   PitchCharacteristic.setValue(value);
+}
+
+void BLEController::publishRollValue(float value) {
+  RollCharacteristic.setValue(value);
+}
+
+void BLEController::publishYawValue(float value) {
+  YawCharacteristic.setValue(value);
 }
