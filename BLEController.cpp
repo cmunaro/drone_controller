@@ -11,7 +11,7 @@ BLEFloatCharacteristic YawCharacteristic(
 
 BLEService PIDDebugService("00700700-0001-0001-0001-222222222222");
 BLEBoolCharacteristic PIDDebugEnabledCharacteristic(
-  "00001111-0000-0000-0002-000000000000", BLEWrite);
+  "00001111-0000-0000-0002-000000000000", BLERead | BLEWrite);
 BLEFloatCharacteristic PWeightCharacteristic(
   "00001111-0000-0000-0002-000000000001", BLEWrite);
 BLEFloatCharacteristic IWeightCharacteristic(

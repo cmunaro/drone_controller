@@ -103,5 +103,5 @@ float PID::calculate_yaw(float Gx, float Gy, float Gz) {
     yaw_angle += Gz * dt;
 
     prev_time = curr_time;
-    return yaw_angle;
+    return yaw_angle - 90;
 }
