@@ -45,31 +45,31 @@ void PID::update(bool showLog, PIDOutputCallback outputCallback) {
     iWeight = this->bleController->iWeight;
     dWeight = this->bleController->dWeight;
   } else {
-    pWeight = 2;
-    iWeight = 0.5;
-    dWeight = 0.1;
+    pWeight = 0.09;
+    iWeight = 0.01;
+    dWeight = 0.01;
   }
 
-  float error = 0 - pitch;
+  float error = (0 - pitch) / 180;
 
   // Proportional term
-  float P = 1 * error;
+  float P = pWeight * error;
 
   // Delta time
-  float currentTime = millis();
-  float dt = currentTime - lastTime;
-  lastTime = currentTime;
+  // float currentTime = millis();
+  // float dt = currentTime - lastTime;
+  // lastTime = currentTime;
 
   // Integral term
-  integral += error * dt;
-  float I = 0.1 * integral;
+  // integral += error * dt;
+  // float I = 0.1 * integral;
   
   // Derivative term
-  float derivative = (error - prev_error) / dt;
-  float D = 0.05 * derivative;
+  // float derivative = (error - prev_error) / dt;
+  // float D = 0.05 * derivative;
   
   // PID output
-  float output = P + I + D;
+  float output = P;// + I + D;
   
   // Update previous error
   prev_error = error;
