@@ -58,7 +58,7 @@ void ESCControl::updateMotorPwmByReceiverOnly(bool showLog) {
 
 double maxPwm = 255;
 double minPwm = 125;
-double thrust = 180;
+double thrust = 145;
 double pwmMotor1 = minPwm;
 double pwmMotor2 = minPwm;
 double pwmMotor3 = minPwm;

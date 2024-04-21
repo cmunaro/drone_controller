@@ -1,8 +1,8 @@
 #include "PID.h"
 
 double pW = 0.17;
-double iW = 0.003;
-double dW = 0.002;
+double iW = 0.0025;
+double dW = 0.004;
 void PID::initialize(BLEController* bleController) {
   this->bleController = bleController;
   this->bleController->setPIDValues(pW, iW, dW);
@@ -86,7 +86,9 @@ void PID::update(bool showLog, PIDOutputCallback outputCallback) {
   Serial.println();
   
   // Update previous error
-  prev_error = error;
+  if (!isnan(error)) {
+    prev_error = error;
+  }
 
   outputCallback(0, output, 0);
 }
