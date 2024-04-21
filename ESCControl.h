@@ -11,7 +11,7 @@ public:
   ESCControl(const Pin (&pins)[4]);
   void initialize(Receiver* receiver, BLEController* bleController);
   void updateMotorPwmByReceiverOnly(bool showLog);
-  void updateMotorPwm(bool showLog, float roll, float pitch, float yaw);
+  void updateMotorPwm(bool showLog, double roll, double pitch, double yaw);
   void waitForThrottleLowPosition();
   
 private:

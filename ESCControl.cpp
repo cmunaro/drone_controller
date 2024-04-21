@@ -56,14 +56,14 @@ void ESCControl::updateMotorPwmByReceiverOnly(bool showLog) {
   }
 }
 
-float maxPwm = 255;
-float minPwm = 125;
-float thrust = 180;
-float pwmMotor1 = minPwm;
-float pwmMotor2 = minPwm;
-float pwmMotor3 = minPwm;
-float pwmMotor4 = minPwm;
-void ESCControl::updateMotorPwm(bool showLog, float roll, float pitch, float yaw) {
+double maxPwm = 255;
+double minPwm = 125;
+double thrust = 180;
+double pwmMotor1 = minPwm;
+double pwmMotor2 = minPwm;
+double pwmMotor3 = minPwm;
+double pwmMotor4 = minPwm;
+void ESCControl::updateMotorPwm(bool showLog, double roll, double pitch, double yaw) {
   
   pwmMotor1 = thrust + thrust * pitch;
   // pwmMotor2 = pwmMotor2 - roll + pitch;

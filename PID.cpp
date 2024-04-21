@@ -1,8 +1,8 @@
 #include "PID.h"
 
-float pW = 0.11;
-float iW = 0.005;
-float dW = 0.01;
+double pW = 0.17;
+double iW = 0.003;
+double dW = 0.002;
 void PID::initialize(BLEController* bleController) {
   this->bleController = bleController;
   this->bleController->setPIDValues(pW, iW, dW);
@@ -22,11 +22,11 @@ void PID::initialize(BLEController* bleController) {
   Serial.println();
 }
 
-float pid_i_mem_pitch = 0;
-float maxCorrection = 50;
-float lastTime = -1;
-float integral = 0;
-float prev_error = 0;
+double pid_i_mem_pitch = 0;
+double maxCorrection = 50;
+double lastTime = -1;
+double integral = 0;
+double prev_error = 0;
 void PID::update(bool showLog, PIDOutputCallback outputCallback) {
   if (lastTime = -1) {
     lastTime = millis();
@@ -35,15 +35,15 @@ void PID::update(bool showLog, PIDOutputCallback outputCallback) {
   IMU.readGyroscope(Gx, Gy, Gz);
   IMU.readAcceleration(Ax, Ay, Az);
   
-  float roll = calculate_roll(Ax, Ay, Az);
-  float pitch = calculate_pitch(Ax, Ay, Az, Gy);
-  float yaw = calculate_yaw(Gx, Gy, Gz);
+  double roll = calculate_roll(Ax, Ay, Az);
+  double pitch = calculate_pitch(Ax, Ay, Az, Gy);
+  double yaw = calculate_yaw(Gx, Gy, Gz);
   
   this->bleController->publishPitchValue(pitch);
   this->bleController->publishRollValue(roll);
   this->bleController->publishYawValue(yaw);
 
-  float pWeight, iWeight, dWeight = 0;
+  double pWeight, iWeight, dWeight = 0;
   if (this->bleController->pidDebugEnabled) {
     pWeight = this->bleController->pWeight;
     iWeight = this->bleController->iWeight;
@@ -54,60 +54,54 @@ void PID::update(bool showLog, PIDOutputCallback outputCallback) {
     dWeight = dW;
   }
 
-  float error = (0 - pitch) / 180;
-
-  Serial.print(pitch);
-  Serial.print("\t\t");
-  Serial.print(error);
-  Serial.println();
+  double error = (0 - pitch) / 180;
 
   // Proportional term
-  float P = pWeight * error;
+  double P = pWeight * error;
 
   // Delta time
-  float currentTime = millis();
-  float dt = (currentTime - lastTime) / 1000;
+  double currentTime = millis();
+  double dt = (currentTime - lastTime) / 1000;
   lastTime = currentTime;
 
   // Integral term
   integral = integral + error * dt;
-  float I = iWeight * integral;
+  double I = iWeight * integral;
   
   // Derivative term
-  // float derivative = (error - prev_error) / dt;
-  // float D = 0.05 * derivative;
+  double derivative = (error - prev_error) / dt;
+  double D = dWeight * derivative;
   
   // PID output
-  float output = P + I;// + D;
+  double output = P + I + D;
+
+
+  Serial.print(pitch);
+  Serial.print("\t\t");
+  Serial.print(error);
+  Serial.print("\t\t");
+  Serial.print(derivative);
+  Serial.print("\t\t");
+  Serial.print(output);
+  Serial.println();
   
   // Update previous error
   prev_error = error;
-  
-  // float pid_error_temp = 0 - roll;
-  // pid_i_mem_pitch += 0.5 * pid_error_temp;
-  // if (pid_i_mem_pitch > maxCorrection) pid_i_mem_pitch = maxCorrection;
-  // else if (pid_i_mem_pitch < -maxCorrection) pid_i_mem_pitch = -maxCorrection;
-
-  // float pid_output_pitch = 0.01 * pid_error_temp + pid_i_mem_pitch; //+ pid_d_gain_pitch * (pid_error_temp - pid_last_d_error);
-  // if (pid_output_pitch > maxCorrection) pid_output_pitch = maxCorrection;
-  // else if (pid_output_pitch < -maxCorrection) pid_output_pitch = -maxCorrection;
-
-  //pid_last_d_error = pid_error_temp;
 
   outputCallback(0, output, 0);
 }
 
-float PID::calculate_roll(float Ax, float Ay, float Az) {
+double PID::calculate_roll(double Ax, double Ay, double Az) {
   return atan2(Ay, Az) * 180.0 / PI;
 }
 
-float PID::calculate_pitch(float Ax, float Ay, float Az, float Gy) {
+double PID::calculate_pitch(double Ax, double Ay, double Az, double Gy) {
   return atan2(Ax, sqrt(Ay * Ay + Az * Az)) * 180 / PI;
 }
 
-float PID::calculate_yaw(float Gx, float Gy, float Gz) {
-    float curr_time = millis() / 1000.0;
-    float dt = curr_time - prev_time;
+double PID::calculate_yaw(double Gx, double Gy, double Gz) {
+    double curr_time = millis() / 1000.0;
+    double dt = curr_time - prev_time;
     yaw_angle += Gz * dt;
 
     prev_time = curr_time;

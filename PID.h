@@ -6,31 +6,31 @@
 #include <functional>
 #include "BLEController.h"
 
-using PIDOutputCallback = std::function<void(float, float, float)>;
+using PIDOutputCallback = std::function<void(double, double, double)>;
 
 class PID {
 public:
   float Ax, Ay, Az;
   float Gx, Gy, Gz;
-  float desired_roll = 0;
-  float desired_pitch = 0;
-  float desired_yaw = 0;
-  float previous_error_roll = 0;
-  float previous_error_pitch = 0;
-  float previous_error_yaw = 0;
-  float integral_roll = 0;
-  float integral_pitch = 0;
-  float integral_yaw = 0;
-  float prev_time = 0;
-  float yaw_angle = 0;
+  double desired_roll = 0;
+  double desired_pitch = 0;
+  double desired_yaw = 0;
+  double previous_error_roll = 0;
+  double previous_error_pitch = 0;
+  double previous_error_yaw = 0;
+  double integral_roll = 0;
+  double integral_pitch = 0;
+  double integral_yaw = 0;
+  double prev_time = 0;
+  double yaw_angle = 0;
   
   void initialize(BLEController* bleController);
   void update(bool showLog, PIDOutputCallback outputCallback);
 private:
   BLEController* bleController;
-  float calculate_roll(float Ax, float Ay, float Az);
-  float calculate_pitch(float Ax, float Ay, float Az, float Gy);
-  float calculate_yaw(float Gx, float Gy, float Gz);
+  double calculate_roll(double Ax, double Ay, double Az);
+  double calculate_pitch(double Ax, double Ay, double Az, double Gy);
+  double calculate_yaw(double Gx, double Gy, double Gz);
 };
 
 #endif
