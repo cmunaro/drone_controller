@@ -48,9 +48,8 @@ void loop() {
 
   // escControl.updateMotorPwmByReceiverOnly(false);
 
-  delay(130);
 }
 
 void updateMotorsForPIDOutput(float roll, float pitch, float yaw) {
-  escControl.updateMotorPwm(true, roll, pitch, yaw);
+  escControl.updateMotorPwm(false, roll, pitch, yaw);
 }

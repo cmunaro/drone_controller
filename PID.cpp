@@ -1,7 +1,11 @@
 #include "PID.h"
 
+float pW = 0.11;
+float iW = 0.005;
+float dW = 0.01;
 void PID::initialize(BLEController* bleController) {
   this->bleController = bleController;
+  this->bleController->setPIDValues(pW, iW, dW);
   if (!IMU.begin()) {
     Serial.println("Failed to initialize IMU!");
     while (1);
@@ -32,7 +36,7 @@ void PID::update(bool showLog, PIDOutputCallback outputCallback) {
   IMU.readAcceleration(Ax, Ay, Az);
   
   float roll = calculate_roll(Ax, Ay, Az);
-  float pitch = calculate_pitch(Ax, Ay, Az);
+  float pitch = calculate_pitch(Ax, Ay, Az, Gy);
   float yaw = calculate_yaw(Gx, Gy, Gz);
   
   this->bleController->publishPitchValue(pitch);
@@ -45,31 +49,36 @@ void PID::update(bool showLog, PIDOutputCallback outputCallback) {
     iWeight = this->bleController->iWeight;
     dWeight = this->bleController->dWeight;
   } else {
-    pWeight = 0.09;
-    iWeight = 0.01;
-    dWeight = 0.01;
+    pWeight = pW;
+    iWeight = iW;
+    dWeight = dW;
   }
 
   float error = (0 - pitch) / 180;
+
+  Serial.print(pitch);
+  Serial.print("\t\t");
+  Serial.print(error);
+  Serial.println();
 
   // Proportional term
   float P = pWeight * error;
 
   // Delta time
-  // float currentTime = millis();
-  // float dt = currentTime - lastTime;
-  // lastTime = currentTime;
+  float currentTime = millis();
+  float dt = (currentTime - lastTime) / 1000;
+  lastTime = currentTime;
 
   // Integral term
-  // integral += error * dt;
-  // float I = 0.1 * integral;
+  integral = integral + error * dt;
+  float I = iWeight * integral;
   
   // Derivative term
   // float derivative = (error - prev_error) / dt;
   // float D = 0.05 * derivative;
   
   // PID output
-  float output = P;// + I + D;
+  float output = P + I;// + D;
   
   // Update previous error
   prev_error = error;
@@ -92,11 +101,10 @@ float PID::calculate_roll(float Ax, float Ay, float Az) {
   return atan2(Ay, Az) * 180.0 / PI;
 }
 
-float PID::calculate_pitch(float Ax, float Ay, float Az) {
-  return atan2(-Ax, sqrt(Ay * Ay + Az * Az)) * 180.0 / PI;
+float PID::calculate_pitch(float Ax, float Ay, float Az, float Gy) {
+  return atan2(Ax, sqrt(Ay * Ay + Az * Az)) * 180 / PI;
 }
 
-// TODO: Fix constant error
 float PID::calculate_yaw(float Gx, float Gy, float Gz) {
     float curr_time = millis() / 1000.0;
     float dt = curr_time - prev_time;

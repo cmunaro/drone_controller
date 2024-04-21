@@ -10,8 +10,9 @@ public:
   void publishPitchValue(float value);
   void publishRollValue(float value);
   void publishYawValue(float value);
+  void setPIDValues(float pW, float iW, float dW);
   void updateBLEState();
-  float pWeight = 0.09;
+  float pWeight = 0;
   float iWeight = 0;
   float dWeight = 0;
   bool pidDebugEnabled = false;

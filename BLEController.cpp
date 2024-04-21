@@ -63,6 +63,12 @@ void BLEController::updateBLEState() {
   }
 }
 
+void BLEController::setPIDValues(float pW, float iW, float dW) {
+  PWeightCharacteristic.writeValue(pW);
+  IWeightCharacteristic.writeValue(iW);
+  DWeightCharacteristic.writeValue(dW);
+}
+
 void BLEController::publishPitchValue(float value) {
   PitchCharacteristic.setValue(value);
 }

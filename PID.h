@@ -29,7 +29,7 @@ public:
 private:
   BLEController* bleController;
   float calculate_roll(float Ax, float Ay, float Az);
-  float calculate_pitch(float Ax, float Ay, float Az);
+  float calculate_pitch(float Ax, float Ay, float Az, float Gy);
   float calculate_yaw(float Gx, float Gy, float Gz);
 };
 
